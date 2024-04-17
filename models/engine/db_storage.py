@@ -37,8 +37,7 @@ class DBStorage:
         Session = scoped_session(session_factory)
         self.__session = Session()
         if cur_env == "test":
-            # Base.metadata.drop_all(self.__engine)
-            pass
+            Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
         """Query on the current database session all objects of the given class."""
