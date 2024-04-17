@@ -14,12 +14,14 @@ if models.storage_type == "db":
 else:
     Base = object
 
+TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
+
 
 class BaseModel:
     """A base class for all hbnb models."""
 
     if models.storage_type == "db":
-        id = Column(String(60), primary_key=True, nullable=False)
+        id = Column(String(60), primary_key=True)
         created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
         updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
 
@@ -27,8 +29,8 @@ class BaseModel:
         """Instatntiate a new model."""
         if not kwargs:
             self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
+            self.created_at = datetime.utcnow()
+            self.updated_at = datetime.utcnow()
         else:
             for key, val in kwargs.items():
                 if key != "__class__":
@@ -39,16 +41,16 @@ class BaseModel:
             else:
                 self.id = kwargs.get("id")
             if kwargs.get("created_at", None) is None:
-                self.created_at = datetime.now()
+                self.created_at = datetime.utcnow()
             else:
                 self.created_at = datetime.strptime(
-                    kwargs.get("created_at", None), "%Y-%m-%dT%H:%M:%S.%f"
+                    kwargs.get("created_at", None), TIME_FORMAT
                 )
             if kwargs.get("updated_at", None) is None:
                 self.updated_at = datetime.now()
             else:
                 self.updated_at = datetime.strptime(
-                    kwargs.get("updated_at", None), "%Y-%m-%dT%H:%M:%S.%f"
+                    kwargs.get("updated_at", None), TIME_FORMAT
                 )
 
     def add_attr(self, attr_name, attr_value):
@@ -72,12 +74,13 @@ class BaseModel:
 
     def __str__(self):
         """Return a string representation of the instance."""
-        cls = (str(type(self)).split(".")[-1]).split("'")[0]
-        return "[{}] ({}) {}".format(cls, self.id, self.__dict__)
+        return "[{:s}] ({:s}) {}".format(
+            self.__class__.__name__, self.id, self.__dict__
+        )
 
     def save(self):
         """Update updated_at with current time when instance is changed."""
-        self.updated_at = datetime.now()
+        self.updated_at = datetime.utcnow()
         models.storage.new(self)
         models.storage.save()
 
