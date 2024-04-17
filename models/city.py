@@ -5,10 +5,10 @@ from sqlalchemy import Column, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 import models
-from models.base_model import BaseModel
+from models.base_model import Base, BaseModel
 
 
-class City(BaseModel):
+class City(BaseModel, Base):
     """The city class, contains state ID and name."""
 
     if models.storage_type == "db":
