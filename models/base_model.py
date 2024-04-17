@@ -27,50 +27,24 @@ class BaseModel:
 
     def __init__(self, *args, **kwargs):
         """Instatntiate a new model."""
-        if not kwargs:
-            self.id = str(uuid.uuid4())
-            self.created_at = datetime.utcnow()
-            self.updated_at = datetime.utcnow()
-        else:
-            for key, val in kwargs.items():
+        if kwargs:
+            for key, value in kwargs.items():
                 if key != "__class__":
-                    setattr(self, key, val)
-
+                    setattr(self, key, value)
+            if kwargs.get("created_at", None) and type(self.created_at) is str:
+                self.created_at = datetime.strptime(kwargs["created_at"], TIME_FORMAT)
+            else:
+                self.created_at = datetime.utcnow()
+            if kwargs.get("updated_at", None) and type(self.updated_at) is str:
+                self.updated_at = datetime.strptime(kwargs["updated_at"], TIME_FORMAT)
+            else:
+                self.updated_at = datetime.utcnow()
             if kwargs.get("id", None) is None:
                 self.id = str(uuid.uuid4())
-            else:
-                self.id = kwargs.get("id")
-            if kwargs.get("created_at", None) is None:
-                self.created_at = datetime.utcnow()
-            else:
-                self.created_at = datetime.strptime(
-                    kwargs.get("created_at", None), TIME_FORMAT
-                )
-            if kwargs.get("updated_at", None) is None:
-                self.updated_at = datetime.now()
-            else:
-                self.updated_at = datetime.strptime(
-                    kwargs.get("updated_at", None), TIME_FORMAT
-                )
-
-    def add_attr(self, attr_name, attr_value):
-        """Take an attribute name and a value and updates it."""
-        try:
-            if attr_value[0] == '"' and attr_value[-1] == '"':
-                st = attr_value.strip('"')
-                argu = ""
-                sp = ""
-                for word in st.split("_"):
-                    word = sp + word
-                    argu += word
-                    sp = " "
-                self.__dict__[attr_name] = argu
-            elif "." in attr_value:
-                self.__dict__[attr_name] = float(attr_value)
-            else:
-                self.__dict__[attr_name] = int(attr_value)
-        except KeyError:
-            self.__dict__[attr_name] = str(attr_value)
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.utcnow()
+            self.updated_at = self.created_at
 
     def __str__(self):
         """Return a string representation of the instance."""
