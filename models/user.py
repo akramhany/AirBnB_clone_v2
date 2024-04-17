@@ -3,10 +3,10 @@
 from sqlalchemy import Column, String
 
 import models
-from models.base_model import BaseModel
+from models.base_model import Base, BaseModel
 
 
-class User(BaseModel):
+class User(BaseModel, Base):
     """This class defines a user by various attributes."""
 
     if models.storage_type == "db":
@@ -20,3 +20,7 @@ class User(BaseModel):
         password = ""
         first_name = ""
         last_name = ""
+
+    def __init__(self, *args, **kwargs):
+        """Initialize a user."""
+        super().__init__(*args, **kwargs)
